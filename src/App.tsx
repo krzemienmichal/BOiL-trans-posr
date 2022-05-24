@@ -11,11 +11,8 @@ import {SyntheticEvent, useState, useEffect} from "react"
 function App() {
   const [tableRows, setTableRows] = useState<Array<CustomRowModel>>([])
   const [finalTableRows, setFinalTableRows] = useState<Array<CustomRowModel>>([])
-  
+  const [shoudCalculate, setShoudCalculate] = useState<number>(1)
   useEffect(() =>{
-    
- 
-
     let rowArr : Array<CustomRowModel>  = Array<CustomRowModel>()
     
     for (let i = 0; i < 2; i++){
