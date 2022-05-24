@@ -10,6 +10,7 @@ import {SyntheticEvent, useState, useEffect} from "react"
 
 function App() {
   const [tableRows, setTableRows] = useState<Array<CustomRowModel>>([])
+  const [finalTableRows, setFinalTableRows] = useState<Array<CustomRowModel>>([])
   
   useEffect(() =>{
     
