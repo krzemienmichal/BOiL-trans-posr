@@ -20,10 +20,16 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
         let SizeString  = size.toString()+'px'
         setSizeString(SizeString)
         }
+        
       },[props.rows])
+
       useEffect(() =>{
+        if(props.rows.length >0)
+        {
         props.rows[changeValue.rowNum].cells[changeValue.colNum].value = changeValue.value;
         props.setRows(props.rows)
+        }
+        
       },[changeValue])
       const addRow = () => {
         let cellArr : Array<CustomCellModel> = JSON.parse(JSON.stringify(props.rows[0].cells))
@@ -52,30 +58,35 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
 
         <div className = "entryDiv" >
             <div className="tableEntryDiv">
-            <Form id="entryForm" style={{ width: sizeString }}>
-                <Table id="entryTable"  bordered responsive hover size="sm" >
-                    <tbody>
-                        {props.rows.map((row) => (<CustomRow  key= {row.rowNum} row={row} setChangeValue={setChangeValue}/>))}
-                    </tbody>
-                </Table>
-                <Button variant="primary" type="button" onClick={addRow}>
-                        Add Suplier
-                </Button>    
-                <Button variant="primary" type="submit">
-                        Calculate
-                </Button>
-            </Form>
+
+                <div className="onlyTableEntryDiv">
+                    <Form id="entryForm" style={{ width: sizeString }}>
+                        <Table id="entryTable"  bordered responsive hover size="sm" >
+                            <tbody>
+                                {props.rows.map((row) => (<CustomRow  key= {row.rowNum} row={row} setChangeValue={setChangeValue}/>))}
+                            </tbody>
+                        </Table>
+                        
+                    </Form>
+                </div>
+                <div className="downButtonsDiv">
+                    <Button id = "addRowButton" type="button" onClick={addRow}>
+                    <i className="fas fa-plus-square"></i>
+                    </Button>    
+                    <Button variant="primary" id = "calculateRowButton" type="button">
+                                Calculate
+                    </Button>
+                </div>
             </div>
             <div className="addColumnDiv">
                 <div>
-                    <Button variant="primary" id = "addColumnButton" type="button" onClick={addCol}>
-                            Add Customer
+                    <Button 
+                     id = "addColumnButton" type="button" onClick={addCol}>
+                    <i className="fas fa-plus-square"></i>
                     </Button> 
                 </div>
                 <div className="">
-                    <span>
-
-                    </span>
+                    <span></span>
                 </div>
                 
             </div>

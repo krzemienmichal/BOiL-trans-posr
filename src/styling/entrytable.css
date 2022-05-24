@@ -26,27 +26,70 @@
     margin-top: 10px;
     padding-left: 0;
     margin-left: 0;
-    border-radius: 25px;
     padding-right: 20px;
 }
 #entryForm{
     margin-left: 2%;
+    
 }
 #addColumnButton{
-
-    margin-left: 9%;
+    background: linear-gradient(-45deg, #0eb6cc, #28a17d, #82d0e8, #273b4f);
+   background-size: 400% 400%;
+   animation: gradient 30s ease infinite;
+   border: none;
+    margin-left: 10px;
 }
+#addRowButton{
+    background: linear-gradient(-45deg, #0eb6cc, #28a17d, #82d0e8, #273b4f);
+   background-size: 400% 400%;
+   animation: gradient 30s ease infinite;
+   border: none;
+   margin-right: 10px;
+    left: 0px;
+}
+#calculateRowButton{
+    background: linear-gradient(-45deg, #0eb6cc, #28a17d, #82d0e8, #273b4f);
+   background-size: 400% 400%;
+   animation: gradient 30s ease infinite;
+   border: none;
+    left: 0px;
+}
+@keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
 .entryDiv{
     display: flex;
 }
 .tableEntryDiv{
-    margin-right: 10px;
-    padding-right:10px;
+    margin-right: 0px;
+    padding-right:0px;
     display: grid;
 
 }
 .addColumnDiv{
     display: grid;
 }
-
+.onlyTableEntryDiv{
+ 
+    display: flex;
+    
+}
+#entryTable{
+    padding-bottom: 0px;
+    margin-bottom: 8px;
+}
+.downButtonsDiv{
+    padding-top:0px;
+    margin-top: 0;
+    margin-left: 2%;
+    display: flex;
+}
 
