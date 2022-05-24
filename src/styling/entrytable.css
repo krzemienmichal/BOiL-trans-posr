@@ -1,0 +1,52 @@
+
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+.cellTable  {
+    margin: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    
+  
+
+}
+#cellTableInput  {
+    margin: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-top: 5%;
+    padding-bottom: 0;
+    border:  none;
+    
+
+}
+
+#rowTable {
+    border: 1px solid #132c54;
+    background: white;
+    margin-top: 10px;
+    padding-left: 0;
+    margin-left: 0;
+    border-radius: 25px;
+    padding-right: 20px;
+}
+#entryForm{
+    margin-left: 2%;
+}
+#addColumnButton{
+
+    margin-left: 9%;
+}
+.entryDiv{
+    display: flex;
+}
+.tableEntryDiv{
+    margin-right: 10px;
+    padding-right:10px;
+    display: grid;
+
+}
+.addColumnDiv{
+    display: grid;
+}
+
+

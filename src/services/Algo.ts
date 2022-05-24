@@ -2,7 +2,7 @@ import Receiver from "../modules/Reveiver"
 import Supplier from "../modules/Supplier"
 import TransportCell from "../modules/TransportCell"
 
-const isBalanced = (suppliers: Array<Supplier>, receivers: Array<Receiver>){
+const isBalanced = (suppliers: Array<Supplier>, receivers: Array<Receiver>)=>{
     // let wholeDeman
 }
 
