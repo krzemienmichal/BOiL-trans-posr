@@ -47,7 +47,7 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
             console.log("add col")
             console.log(size)
             console.log(props.rows)
-            props.rows.forEach(row => row.cells.push({colNum: size, value: "" }))
+            props.rows.forEach(row => row.cells.push({colNum: size, value: "", transport:"" }))
             
             console.log(props.rows)
             props.setRows([...props.rows])

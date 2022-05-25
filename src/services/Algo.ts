@@ -52,7 +52,8 @@ const CalcTransportTable =
 }
 
 const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setReceivers:(t:Array<Receiver>) => void, 
-    setTransportTable:(t:Array<TransportCell>) => void, rows: Array<CustomRowModel>)=> {
+    setTransportTable:(t:Array<TransportCell>) => void, rows: Array<CustomRowModel>,
+    setShouldStartCalculation:(t:number) => void, shouldStartCalculation: number)=> {
     // receiver wiersz ,odbiorca kolumna 
 
     let tempReceivers : Array<Receiver> = Array<Receiver>();
@@ -107,10 +108,50 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
     setSuppliers(tempSuppliers)
     setReceivers(tempReceivers)
     setTransportTable(tempTransportTable)
-    console.log("receivers: ", tempReceivers)
-      console.log("suppliers: ", tempSuppliers)
-      console.log("transportTable: ", tempTransportTable)
+  
+    setShouldStartCalculation(shouldStartCalculation*-1)
     return
 
 }
-export {setTransportTableFunc}
+const createFinalTable = (setFinalTableRows:(t:Array<CustomRowModel>) => void, suppliers: Array<Supplier>,
+            receivers: Array<Receiver>, transportTable: Array<TransportCell>,) => {
+
+    console.log("Receivers ", receivers)
+    console.log("Suppliers ", suppliers)
+    console.log("TransportTable ", transportTable)
+   
+    var tempFinalTable = new Array<CustomRowModel>();
+    var length_of_row = receivers.length
+    {
+        let  tempCellArray = new Array<CustomCellModel>();
+        tempCellArray.push({ colNum:0, value:"", transport:""})
+        for(let j = 0; j <receivers.length; j++){
+
+            tempCellArray.push({ colNum:j, value:receivers[j].name + ", " +receivers[j].demand.toString(), transport:""})
+        }
+        tempFinalTable.push({ rowNum:0, cells:JSON.parse(JSON.stringify(tempCellArray))})
+    }
+    for (let i = 0; i <suppliers.length ; i++){
+        let  tempCellArray = new Array<CustomCellModel>();
+        for(let j = 0; j <receivers.length; j++){
+
+            if (j ===0){
+               
+                tempCellArray.push({ colNum:j, value:suppliers[i].name + ", " +suppliers[i].supply.toString(), transport:""})
+            }
+           
+
+            let index:number =(i) * length_of_row + j
+            console.log(index.toString() ," ,i = ", i , ' , j = ', j)
+            tempCellArray.push({ colNum:j, value:transportTable[index].transport.toString(), transport: transportTable[index].profit.toString()})
+            
+        }
+        tempFinalTable.push({ rowNum:i+1, cells:JSON.parse(JSON.stringify(tempCellArray))})
+    }
+
+    console.log("final table:  ", tempFinalTable)
+    setFinalTableRows(tempFinalTable)
+    return
+
+}
+export {setTransportTableFunc, createFinalTable}

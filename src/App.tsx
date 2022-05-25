@@ -10,7 +10,7 @@ import {SyntheticEvent, useState, useEffect} from "react"
 import Receiver from './modules/Receiver'
 import Supplier from './modules/Supplier'
 import TransportCell from './modules/TransportCell'
-import {setTransportTableFunc} from './services/Algo'
+import {setTransportTableFunc, createFinalTable} from './services/Algo'
 
 function App() {
   const [tableRows, setTableRows] = useState<Array<CustomRowModel>>([])
@@ -19,13 +19,16 @@ function App() {
   const [receivers, setReceivers] = useState<Array<Receiver>>([])
   const [suppliers, setSuppliers] = useState<Array<Supplier>>([])
   const [transportTable, setTransportTable] = useState<Array<TransportCell>>([])
+  const [shouldCreateFinalTable, setShouldCreateFinalTable] = useState<number>(1)
+  const [shouldStartCalculation, setShouldStartCalculation] = useState<number>(1)
+
   useEffect(() =>{
     let rowArr : Array<CustomRowModel>  = Array<CustomRowModel>()
     
     for (let i = 0; i < 2; i++){
       rowArr.push({rowNum : 0, cells : Array<CustomCellModel>()});
       for (let j = 0; j < 2; j++){
-        rowArr[rowArr.length-1].cells.push({colNum : 0, value :""})
+        rowArr[rowArr.length-1].cells.push({colNum : 0, value :"", transport:""})
       }
     }
     for (let i = 0; i < 2; i++){
@@ -42,13 +45,24 @@ function App() {
   useEffect(() =>{
     if(tableRows.length >0){
 
-      setTransportTableFunc(setSuppliers, setReceivers, setTransportTable, tableRows)
+      setTransportTableFunc(setSuppliers, setReceivers, setTransportTable, tableRows, setShouldStartCalculation, shouldStartCalculation)
 
-      console.log("receivers: ", receivers)
-      console.log("suppliers: ", suppliers)
-      console.log("transportTable: ", transportTable)
     }
   },[shouldCalculate]);
+
+  useEffect(() =>{
+    if(suppliers.length >0){
+
+      setShouldCreateFinalTable(shouldCreateFinalTable*-1)
+     
+    }
+  },[shouldStartCalculation]); 
+  useEffect(() =>{
+    if(suppliers.length >0){
+      createFinalTable(setFinalTableRows, suppliers, receivers, transportTable)
+     
+    }
+  },[shouldCreateFinalTable]); 
   return (
     <div className="App">
 
