@@ -4,6 +4,7 @@ import TransportCell from "../modules/TransportCell"
 import CustomCellModel from '../modules/CustomCellModel'
 import CustomRowModel from '../modules/CustomRowModel'
 
+
 //nie trzeba sprawdzac balancowania bo balancowanie jest juz przy ustawianiu dostawcow, odbiorcow oraz tej tabeli (setTransportTableFunc)
 
 if(typeof(String.prototype.trim) === "undefined")
@@ -154,4 +155,67 @@ const createFinalTable = (setFinalTableRows:(t:Array<CustomRowModel>) => void, s
     return
 
 }
-export {setTransportTableFunc, createFinalTable}
+const checkIfAllFilled = (rows: Array<CustomRowModel>) :boolean =>{
+
+   
+    for(let i = 0; i < rows.length; i++){
+        for(let j =0; j <rows[i].cells.length; j++){
+            if ( i !==0 && j!==0){
+                if(rows[i].cells[j].value===""){
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+
+}
+const checkIfFilledCorrectly = (rows: Array<CustomRowModel>) :string =>{
+
+    var wrong:boolean = false;
+    var error:string = "error occurred in following cell/cells = ["
+    for(let i = 0; i < rows.length; i++){
+        for(let j =0; j <rows[i].cells.length; j++){
+            if ( i ===0 && j===0){
+                
+            }else{
+                if(i ===0){
+                    let str:string = rows[0].cells[j].value.trim();
+                    
+                    let nm =parseInt(str.substring(str.lastIndexOf(", ") + 1, str.length))
+                    console.log("str" + str+" , error =" + nm+"/")
+                    if(Number.isInteger(nm) === false){
+                       wrong = true;
+                       error += "("+i.toString()+ ", " +j.toString()+ "), ";   
+                    }
+                }
+                else if(j===0)
+                {
+                    let str:string = rows[i].cells[0].value.trim();
+                    
+                    let nm =parseInt(str.substring(str.lastIndexOf(", ") + 1, str.length))
+                    console.log("str" + str+" , error =" + nm+"/")
+                    if(Number.isInteger(nm) === false){
+                       wrong = true;
+                       error += "("+i.toString()+ ", " +j.toString()+ "), ";   
+                    }
+                }
+                else{
+                    let nm =parseInt(rows[i].cells[j].value)
+                    if(Number.isInteger(nm)===false){
+                        error += "("+i.toString()+ ", " +j.toString()+ "), "; 
+                        wrong = true;
+                    }
+                }
+            }
+        }
+    }
+    error = error.trim().slice(0,-1) +"]"
+    
+    if (wrong === false) {
+        return ""
+    }
+    return error;
+
+}
+export {setTransportTableFunc, createFinalTable, checkIfAllFilled, checkIfFilledCorrectly}

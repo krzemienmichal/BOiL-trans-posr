@@ -7,7 +7,8 @@ import CustomCellModel from '../modules/CustomCellModel'
 import ChangeValueModel from '../modules/ChangeValueModel'
 import {CustomRow} from './CustomRowEntryTable'
 import '../styling/entrytable.css'
-const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<CustomRowModel>) => void, setShouldCalculate:(t:number) => void, shouldCalculate: number  }) => {
+const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<CustomRowModel>) => void,
+     setShouldCalculate:(t:number) => void, shouldCalculate: number, error: string  }) => {
     
     const [sizeString, setSizeString] = useState<string>("20px")
     const [changeValue, setChangeValue] = useState<ChangeValueModel>({rowNum:0, colNum:0, value:""})
@@ -20,17 +21,18 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
         setSizeString(SizeString)
         }
         
-      },[props.rows])
+    },[props.rows])
 
-      useEffect(() =>{
+    useEffect(() =>{
         if(props.rows.length >0)
         {
         props.rows[changeValue.rowNum].cells[changeValue.colNum].value = changeValue.value;
         props.setRows(props.rows)
         }
         
-      },[changeValue])
-      const addRow = () => {
+    },[changeValue])
+
+    const addRow = () => {
         let cellArr : Array<CustomCellModel> = JSON.parse(JSON.stringify(props.rows[0].cells))
         console.log(cellArr)
         let tempRows : CustomRowModel = {rowNum : props.rows.length, cells :  cellArr};
@@ -40,39 +42,39 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
 
          props.setRows([...props.rows, tempRows])
           
-        }
-        const addCol = () => {
-            let size = props.rows[0].cells.length
-            console.log("add col")
-            console.log(size)
-            console.log(props.rows)
-            props.rows.forEach(row => row.cells.push({colNum: size, value: "", transport:"" }))
+    }
+    const addCol = () => {
+        let size = props.rows[0].cells.length
+        console.log("add col")
+        console.log(size)
+        console.log(props.rows)
+        props.rows.forEach(row => row.cells.push({colNum: size, value: "", transport:"" }))
+        
+        console.log(props.rows)
+        props.setRows([...props.rows])
             
-            console.log(props.rows)
+              
+    }
+
+    const removeRow = () => {
+        props.rows.pop()
+
             props.setRows([...props.rows])
             
-              
-        }
-        const removeRow = () => {
-            props.rows.pop()
-    
-             props.setRows([...props.rows])
-              
-            }
-            const removeCol = () => {
-                let size = props.rows[0].cells.length
-                props.rows.forEach(row => {
-                    row.cells.pop()
-                })
-                props.setRows([...props.rows])
-                
-                  
-            }
-        const calculate = () => {
-            props.setShouldCalculate(props.shouldCalculate*-1)
+    }
+    const removeCol = () => {
+        let size = props.rows[0].cells.length
+        props.rows.forEach(row => {
+            row.cells.pop()
+        })
+        props.setRows([...props.rows])
+        
             
-              
-        }
+    }
+    const calculate = () => {
+        props.setShouldCalculate(props.shouldCalculate*-1)
+               
+    }
     return( 
 
         <div className = "entryDiv" >
@@ -85,8 +87,9 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
                                 {props.rows.map((row) => (<CustomRow  key= {row.rowNum} row={row} setChangeValue={setChangeValue}/>))}
                             </tbody>
                         </Table>
-                        
+                        <p style = {{color: "red"}}>{props.error}</p>
                     </Form>
+                    
                 </div>
                 <div className="downButtonsDiv">
                     <Button id = "addRowButton" type="button" onClick={addRow}>
@@ -98,6 +101,8 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
                     <Button variant="primary" id = "calculateRowButton"  onClick={calculate} type="button">
                                 Calculate
                     </Button>
+                   
+                    
                 </div>
             </div>
             <div className="addColumnDiv">

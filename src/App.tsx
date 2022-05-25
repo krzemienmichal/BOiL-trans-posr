@@ -3,14 +3,14 @@ import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Row} from 'react-bootstrap'
-import {Entrytable} from './components/EntryTable'
+import {Entrytable} from './components/Entrytable'
 import CustomRowModel from './modules/CustomRowModel'
 import CustomCellModel from './modules/CustomCellModel'
 import {SyntheticEvent, useState, useEffect} from "react"
 import Receiver from './modules/Receiver'
 import Supplier from './modules/Supplier'
 import TransportCell from './modules/TransportCell'
-import {setTransportTableFunc, createFinalTable} from './services/Algo'
+import {setTransportTableFunc, createFinalTable, checkIfAllFilled, checkIfFilledCorrectly} from './services/Algo'
 import {FinalTable} from './components/FinalTable'
 import {CustomNavbar} from './components/Navbar'
 
@@ -23,6 +23,7 @@ function App() {
   const [transportTable, setTransportTable] = useState<Array<TransportCell>>([])
   const [shouldCreateFinalTable, setShouldCreateFinalTable] = useState<number>(1)
   const [shouldStartCalculation, setShouldStartCalculation] = useState<number>(1)
+  const [error, setError] = useState<string>("")
 
   useEffect(() =>{
     let rowArr : Array<CustomRowModel>  = Array<CustomRowModel>()
@@ -45,9 +46,15 @@ function App() {
   },[]);
 
   useEffect(() =>{
-    if(tableRows.length >0){
-
-      setTransportTableFunc(setSuppliers, setReceivers, setTransportTable, tableRows, setShouldStartCalculation, shouldStartCalculation)
+    if(tableRows.length >0 && checkIfAllFilled(tableRows) === true){
+      var err: string= checkIfFilledCorrectly(tableRows)
+      if(err==="")
+      {
+        setTransportTableFunc(setSuppliers, setReceivers, setTransportTable, tableRows, setShouldStartCalculation, shouldStartCalculation)
+        setError("")
+      }else{
+        setError(err)
+      }
 
     }
   },[shouldCalculate]);
@@ -59,6 +66,7 @@ function App() {
      
     }
   },[shouldStartCalculation]); 
+
   useEffect(() =>{
     if(suppliers.length >0){
       createFinalTable(setFinalTableRows, suppliers, receivers, transportTable)
@@ -72,7 +80,8 @@ function App() {
 
         <div className="entryTable">
           <Entrytable rows = {tableRows} setRows = {setTableRows}
-           setShouldCalculate = {setShouldCalculate} shouldCalculate = {shouldCalculate}/>
+           setShouldCalculate = {setShouldCalculate} shouldCalculate = {shouldCalculate}
+           error = {error}/>
         </div>
 
         
