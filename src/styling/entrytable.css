@@ -29,7 +29,7 @@
     padding-right: 20px;
 }
 #entryForm{
-    margin-left: 2%;
+    margin-left: 50px;
     
 }
 #addColumnButton{
@@ -38,8 +38,25 @@
    animation: gradient 30s ease infinite;
    border: none;
     margin-left: 10px;
+    display: inline;
 }
 #addRowButton{
+    background: linear-gradient(-45deg, #0eb6cc, #28a17d, #82d0e8, #273b4f);
+   background-size: 400% 400%;
+   animation: gradient 30s ease infinite;
+   border: none;
+   margin-right: 10px;
+    left: 0px;
+}
+#removeColumnButton{
+    background: linear-gradient(-45deg, #0eb6cc, #28a17d, #82d0e8, #273b4f);
+   background-size: 400% 400%;
+   animation: gradient 30s ease infinite;
+   border: none;
+    margin-left: 10px;
+    display: inline;
+}
+#removeRowButton{
     background: linear-gradient(-45deg, #0eb6cc, #28a17d, #82d0e8, #273b4f);
    background-size: 400% 400%;
    animation: gradient 30s ease infinite;
@@ -67,6 +84,7 @@
   }
 .entryDiv{
     display: flex;
+    margin-top:  1%;
 }
 .tableEntryDiv{
     margin-right: 0px;
@@ -75,7 +93,7 @@
 
 }
 .addColumnDiv{
-    display: grid;
+    display: inline;
 }
 .onlyTableEntryDiv{
  
@@ -89,7 +107,7 @@
 .downButtonsDiv{
     padding-top:0px;
     margin-top: 0;
-    margin-left: 2%;
+    margin-left: 50px;
     display: flex;
 }
 

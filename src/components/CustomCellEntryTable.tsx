@@ -1,9 +1,5 @@
-import React from "react";
-import {SyntheticEvent, useState} from "react"
 import "bootstrap/dist/css/bootstrap.min.css"
 import {Row,Form, Table} from 'react-bootstrap'
-import TransportCell from '../modules/TransportCell'
-import CustomRowModel from '../modules/CustomRowModel'
 import CustomCellModel from '../modules/CustomCellModel'
 import ChangeValueModel from '../modules/ChangeValueModel'
 import '../styling/entrytable.css'

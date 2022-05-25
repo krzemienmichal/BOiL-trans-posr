@@ -63,14 +63,14 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
     var totalSupply =0;
     for (let i = 1; i <rows[0].cells.length; i++){ // id zaczynaja sie od 1 
         let str:string = rows[0].cells[i].value.trim();
-        let tempName = str.substring(0, str.lastIndexOf(", ") + 1);
+        let tempName = str.substring(0, str.lastIndexOf(", "));
         let tempValue = parseInt(str.substring(str.lastIndexOf(", ") + 1, str.length));
         tempReceivers.push({ id : i, name: tempName, demand: tempValue, actualDemand:tempValue })
         totalDemand += tempValue
     }
     for (let i = 1; i <rows.length; i++){ // id zaczynaja sie od 1 
         let str:string = rows[i].cells[0].value.trim();
-        let tempName = str.substring(0, str.lastIndexOf(", ") + 1);
+        let tempName = str.substring(0, str.lastIndexOf(", "));
         let tempValue = parseInt(str.substring(str.lastIndexOf(", ") + 1, str.length));
         tempSuppliers.push({ id : i, name: tempName, supply: tempValue, actualSupply:tempValue })
         totalSupply += tempValue

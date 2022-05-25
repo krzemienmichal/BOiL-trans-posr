@@ -1,5 +1,5 @@
 .App {
-  text-align: center;
+
   color: blue;
    background: linear-gradient(-45deg, #0eb6cc, #28a17d, #82d0e8, #273b4f);
    background-size: 400% 400%;
@@ -22,3 +22,11 @@
      background-position: 0% 50%;
    }
  }
+ .finalResults{
+
+  display: flex;
+ }
+ .finalTable{
+   display: flex;
+ }
+ 

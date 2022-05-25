@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Row} from 'react-bootstrap'
-import {Entrytable} from './components/Entrytable'
+import {Entrytable} from './components/EntryTable'
 import CustomRowModel from './modules/CustomRowModel'
 import CustomCellModel from './modules/CustomCellModel'
 import {SyntheticEvent, useState, useEffect} from "react"
@@ -11,6 +11,8 @@ import Receiver from './modules/Receiver'
 import Supplier from './modules/Supplier'
 import TransportCell from './modules/TransportCell'
 import {setTransportTableFunc, createFinalTable} from './services/Algo'
+import {FinalTable} from './components/FinalTable'
+import {CustomNavbar} from './components/Navbar'
 
 function App() {
   const [tableRows, setTableRows] = useState<Array<CustomRowModel>>([])
@@ -65,7 +67,7 @@ function App() {
   },[shouldCreateFinalTable]); 
   return (
     <div className="App">
-
+      <CustomNavbar/>
       <div className="entryValues">
 
         <div className="entryTable">
@@ -75,6 +77,11 @@ function App() {
 
         
       </div> 
+      <div className="finalResults">
+        <div className="finalTable">
+          <FinalTable rows = {finalTableRows} />
+          </div>
+      </div>
       
     </div>
   );

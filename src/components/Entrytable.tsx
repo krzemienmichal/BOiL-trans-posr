@@ -2,11 +2,10 @@ import React from "react";
 import {SyntheticEvent, useEffect, useState} from "react"
 import "bootstrap/dist/css/bootstrap.min.css"
 import {Row, Form, Button, Table} from 'react-bootstrap'
-import TransportCell from '../modules/TransportCell'
 import CustomRowModel from '../modules/CustomRowModel'
 import CustomCellModel from '../modules/CustomCellModel'
 import ChangeValueModel from '../modules/ChangeValueModel'
-import {CustomRow} from './CustomRow'
+import {CustomRow} from './CustomRowEntryTable'
 import '../styling/entrytable.css'
 const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<CustomRowModel>) => void, setShouldCalculate:(t:number) => void, shouldCalculate: number  }) => {
     
@@ -54,6 +53,21 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
             
               
         }
+        const removeRow = () => {
+            props.rows.pop()
+    
+             props.setRows([...props.rows])
+              
+            }
+            const removeCol = () => {
+                let size = props.rows[0].cells.length
+                props.rows.forEach(row => {
+                    row.cells.pop()
+                })
+                props.setRows([...props.rows])
+                
+                  
+            }
         const calculate = () => {
             props.setShouldCalculate(props.shouldCalculate*-1)
             
@@ -77,6 +91,9 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
                 <div className="downButtonsDiv">
                     <Button id = "addRowButton" type="button" onClick={addRow}>
                     <i className="fas fa-plus-square"></i>
+                    </Button>   
+                    <Button id = "removeRowButton" type="button" onClick={removeRow}>
+                    <i className="fas fa-minus-square"></i>
                     </Button>    
                     <Button variant="primary" id = "calculateRowButton"  onClick={calculate} type="button">
                                 Calculate
@@ -84,12 +101,15 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
                 </div>
             </div>
             <div className="addColumnDiv">
-                <div>
                     <Button 
                      id = "addColumnButton" type="button" onClick={addCol}>
                     <i className="fas fa-plus-square"></i>
                     </Button> 
-                </div>
+                    <Button 
+                     id = "removeColumnButton" type="button" onClick={removeCol}>
+                    <i className="fas fa-minus-square"></i>
+                    </Button> 
+                
                 <div className="">
                     <span></span>
                 </div>

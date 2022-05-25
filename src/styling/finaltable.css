@@ -1,0 +1,51 @@
+
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+.cellTable  {
+    margin: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    
+  
+
+}
+
+#rowTable {
+    border: 1px solid #132c54;
+    background: white;
+    margin-top: 10px;
+    padding-left: 0;
+    margin-left: 0;
+    padding-right: 20px;
+}
+
+.finalDiv{
+    display: flex;
+    
+}
+.tableFinalDiv{
+    margin-right: 0px;
+    padding-right:0px;
+    display: grid;
+    margin-left: 50px;
+    margin-top: 4%;
+
+}
+
+#upperIndexs{
+    
+    display:inline;
+}
+h5{
+    
+    display:inline;
+}
+#finalTable{
+    padding-bottom: 0px;
+    margin-bottom: 8px;
+}
+#transportValue{
+    margin-left: 20%;
+}
+
+
