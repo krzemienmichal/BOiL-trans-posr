@@ -1,9 +1,11 @@
 type TransportCell={
     id: number
     isBase: boolean
-    zysk: number
+    profit: number
     transport: number
     wasPicked: boolean
+    rowId:number
+    colId:number
 }
 
 export default TransportCell;

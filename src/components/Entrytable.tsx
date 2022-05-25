@@ -8,7 +8,7 @@ import CustomCellModel from '../modules/CustomCellModel'
 import ChangeValueModel from '../modules/ChangeValueModel'
 import {CustomRow} from './CustomRow'
 import '../styling/entrytable.css'
-const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<CustomRowModel>) => void }) => {
+const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<CustomRowModel>) => void, setShouldCalculate:(t:number) => void, shouldCalculate: number  }) => {
     
     const [sizeString, setSizeString] = useState<string>("20px")
     const [changeValue, setChangeValue] = useState<ChangeValueModel>({rowNum:0, colNum:0, value:""})
@@ -54,6 +54,11 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
             
               
         }
+        const calculate = () => {
+            props.setShouldCalculate(props.shouldCalculate*-1)
+            
+              
+        }
     return( 
 
         <div className = "entryDiv" >
@@ -73,7 +78,7 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
                     <Button id = "addRowButton" type="button" onClick={addRow}>
                     <i className="fas fa-plus-square"></i>
                     </Button>    
-                    <Button variant="primary" id = "calculateRowButton" type="button">
+                    <Button variant="primary" id = "calculateRowButton"  onClick={calculate} type="button">
                                 Calculate
                     </Button>
                 </div>

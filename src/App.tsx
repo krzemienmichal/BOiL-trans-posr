@@ -7,11 +7,18 @@ import {Entrytable} from './components/Entrytable'
 import CustomRowModel from './modules/CustomRowModel'
 import CustomCellModel from './modules/CustomCellModel'
 import {SyntheticEvent, useState, useEffect} from "react"
+import Receiver from './modules/Receiver'
+import Supplier from './modules/Supplier'
+import TransportCell from './modules/TransportCell'
+import {setTransportTableFunc} from './services/Algo'
 
 function App() {
   const [tableRows, setTableRows] = useState<Array<CustomRowModel>>([])
   const [finalTableRows, setFinalTableRows] = useState<Array<CustomRowModel>>([])
-  const [shoudCalculate, setShoudCalculate] = useState<number>(1)
+  const [shouldCalculate, setShouldCalculate] = useState<number>(1)
+  const [receivers, setReceivers] = useState<Array<Receiver>>([])
+  const [suppliers, setSuppliers] = useState<Array<Supplier>>([])
+  const [transportTable, setTransportTable] = useState<Array<TransportCell>>([])
   useEffect(() =>{
     let rowArr : Array<CustomRowModel>  = Array<CustomRowModel>()
     
@@ -31,13 +38,25 @@ function App() {
     setTableRows(rowArr)
     console.log(rowArr)
   },[]);
+
+  useEffect(() =>{
+    if(tableRows.length >0){
+
+      setTransportTableFunc(setSuppliers, setReceivers, setTransportTable, tableRows)
+
+      console.log("receivers: ", receivers)
+      console.log("suppliers: ", suppliers)
+      console.log("transportTable: ", transportTable)
+    }
+  },[shouldCalculate]);
   return (
     <div className="App">
 
       <div className="entryValues">
 
         <div className="entryTable">
-          <Entrytable rows = {tableRows} setRows = {setTableRows}/>
+          <Entrytable rows = {tableRows} setRows = {setTableRows}
+           setShouldCalculate = {setShouldCalculate} shouldCalculate = {shouldCalculate}/>
         </div>
 
         
