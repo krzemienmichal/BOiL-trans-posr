@@ -27,9 +27,9 @@ const FinalTable = (props: { rows: Array<CustomRowModel>}) => {
     return( 
 
         <div className = "finalDiv" >
-            <div className="tableFinalDiv" style={{ width: sizeString }}>
+            <div className="tableFinalDiv" style={{ maxWidth: '90vw' }}>
                     
-                <Table id="finalTable"  bordered responsive hover size="sm"  >
+                <Table id="finalTable"  bordered responsive hover size="sm" style={{ width: sizeString }} >
                     <tbody>
                         {props.rows.map((row) => (<CustomRow  key= {row.rowNum} row={row} />))}
                     </tbody>
