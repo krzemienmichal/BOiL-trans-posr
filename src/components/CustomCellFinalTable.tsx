@@ -30,7 +30,7 @@ const CustomCell = (props: { cell: CustomCellModel, rowNumber:number }) => {
         if(Number.isInteger(value)===false){
           MarginLeftString = ''
           MarginRightString = ''
-          FontSize = "20"
+          FontSize = "20px"
           MarginString = "auto"
         }
         
