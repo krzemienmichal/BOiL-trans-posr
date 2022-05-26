@@ -15,7 +15,7 @@ const CustomCell = (props: { cell: CustomCellModel, rowNumber:number , setChange
         
         <td className="cellTable">
             <Form.Group className="mb-3" controlId="formInput">
-                <Form.Control id="cellTableInput" size ='sm' type="text" placeholder = { props.cell.value}  onChange={(e) => {handleChange(e)}}/>
+                <Form.Control  style = {{fontSize: 18}}id="cellTableInput" size ='sm' type="text" placeholder = { props.cell.value}  onChange={(e) => {handleChange(e)}}/>
             </Form.Group>
         </td>
         
