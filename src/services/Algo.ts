@@ -21,7 +21,7 @@ const findMaxGain=(suppliers: Array<Supplier>, receivers: Array<Receiver>, trans
     let idx_j: number = 0;
     for(let i = 0; i < receivers.length; i++){
         for(let j=0; j < suppliers.length; j++){
-            if(transportTable[i][j].wasPicked === false && transportTable[idx_i][idx_j] < transportTable[i][j]){
+            if(transportTable[i][j].wasPicked === false && transportTable[idx_i][idx_j].profit < transportTable[i][j].profit){
                 idx_i = i;
                 idx_j = j;
             }
@@ -64,23 +64,25 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
     var totalSupply =0;
     for (let i = 1; i <rows[0].cells.length; i++){ // id zaczynaja sie od 1 
         let str:string = rows[0].cells[i].value.trim();
-        let tempName = str.substring(0, str.lastIndexOf(", "));
+        let tempName = str.substring(0, str.indexOf(", "));
+        let tempPrice = parseInt(str.substring(str.indexOf(", ")+1, str.lastIndexOf(", ")))
         let tempValue = parseInt(str.substring(str.lastIndexOf(", ") + 1, str.length));
-        tempReceivers.push({ id : i, name: tempName, demand: tempValue, actualDemand:tempValue })
+        tempReceivers.push({ id : i, name: tempName, demand: tempValue, actualDemand:tempValue, sellingPrice:tempPrice })
         totalDemand += tempValue
     }
     for (let i = 1; i <rows.length; i++){ // id zaczynaja sie od 1 
         let str:string = rows[i].cells[0].value.trim();
-        let tempName = str.substring(0, str.lastIndexOf(", "));
+        let tempName = str.substring(0, str.indexOf(", "));
+        let tempCost = parseInt(str.substring(str.indexOf(", ") + 1, str.lastIndexOf(", ")))
         let tempValue = parseInt(str.substring(str.lastIndexOf(", ") + 1, str.length));
-        tempSuppliers.push({ id : i, name: tempName, supply: tempValue, actualSupply:tempValue })
+        tempSuppliers.push({ id : i, name: tempName, supply: tempValue, actualSupply:tempValue, productCost:tempCost })
         totalSupply += tempValue
     }
     let rowLength =rows.length
     let cellLength =rows[0].cells.length
     if (totalSupply !== totalDemand){
-        tempSuppliers.push({ id : rowLength, name: "Fictitious Supplier", supply: totalDemand, actualSupply:totalDemand })
-        tempReceivers.push({ id : cellLength, name: "Fictitious Receiver", demand: totalSupply, actualDemand:totalSupply })
+        tempSuppliers.push({ id : rowLength, name: "Fictitious Supplier", supply: totalDemand, actualSupply:totalDemand, productCost:0 })
+        tempReceivers.push({ id : cellLength, name: "Fictitious Receiver", demand: totalSupply, actualDemand:totalSupply, sellingPrice:0 })
     }
     let index = 0;
     for (let i = 1; i < tempSuppliers[tempSuppliers.length -1].id+1; i++){
@@ -127,7 +129,6 @@ const createFinalTable = (setFinalTableRows:(t:Array<CustomRowModel>) => void, s
         let  tempCellArray = new Array<CustomCellModel>();
         tempCellArray.push({ colNum:0, value:"", transport:""})
         for(let j = 0; j <receivers.length; j++){
-
             tempCellArray.push({ colNum:j, value:receivers[j].name + ", " +receivers[j].demand.toString(), transport:""})
         }
         tempFinalTable.push({ rowNum:0, cells:JSON.parse(JSON.stringify(tempCellArray))})

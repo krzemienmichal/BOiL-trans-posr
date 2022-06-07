@@ -3,6 +3,7 @@ type Receiver={
     name:string
     demand: number
     actualDemand: number
+    sellingPrice: number
 }
 
 export default Receiver;
