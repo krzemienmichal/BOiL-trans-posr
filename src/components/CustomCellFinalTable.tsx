@@ -45,8 +45,8 @@ const CustomCell = (props: { cell: CustomCellModel, rowNumber:number }) => {
     return( 
         
         <td className="cellTable">
-          <sup id="upperIndex" > <h5 style={{fontSize: 17}}>{props.cell.transport} </h5></sup>  <h5 style={{marginLeft: marginLeftString,
-             marginRight: marginRightString, fontSize: fontSize, margin:marginString}}> {props.cell.value} </h5>
+          <sup id="upperIndex" > <h5 style={{fontSize: 17}}>{props.cell.value} </h5></sup>  <h5 style={{marginLeft: marginLeftString,
+             marginRight: marginRightString, fontSize: fontSize, margin:marginString}}> {props.cell.transport} </h5>
         </td>
         
     )

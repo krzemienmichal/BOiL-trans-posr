@@ -81,14 +81,14 @@ const Entrytable = (props: { rows: Array<CustomRowModel>, setRows:(t:Array<Custo
             <div className="tableEntryDiv">
 
                 <div className="onlyTableEntryDiv">
-                    <Form id="entryForm" style={{  maxWidth:"90vw" }}>
+                    <div id="entryForm" style={{  maxWidth:"90vw" }}>
                         <Table id="entryTable"  bordered responsive hover size="sm" style={{ width: sizeString}}>
                             <tbody>
                                 {props.rows.map((row) => (<CustomRow  key= {row.rowNum} row={row} setChangeValue={setChangeValue}/>))}
                             </tbody>
                         </Table>
                         <p style = {{color: "red"}}>{props.error}</p>
-                    </Form>
+                    </div>
                     
                 </div>
                 <div className="downButtonsDiv">

@@ -15,41 +15,80 @@ if(typeof(String.prototype.trim) === "undefined")
     };
 }
 
+const findMaxGain=(suppliers: Array<Supplier>, receivers: Array<Receiver>, transportTable: Array<TransportCell>,
+                   pickedIndexes: Array<number>) => {
+    var idx_i: number = 0;
+    var idx_j: number = 0;
+    var idx: number = 0;
+    var max_idx: number = 0;
+    for(let i = 0 ; i < transportTable.length; i++){
+        if(!pickedIndexes.includes(i)){
+            max_idx = i;
+            // idx_j = transportTable[i].colId-1
+            // idx_i = transportTable[i].rowId-1
+            break;
+        }
+    }
 
-const findMaxGain=(suppliers: Array<Supplier>, receivers: Array<Receiver>, transportTable: Array<Array<TransportCell>>) => {
-    let idx_i: number = 0;
-    let idx_j: number = 0;
-    for(let i = 0; i < receivers.length; i++){
-        for(let j=0; j < suppliers.length; j++){
-            if(transportTable[i][j].wasPicked === false && transportTable[idx_i][idx_j].profit < transportTable[i][j].profit){
+    for(let i = 0; i < suppliers.length; i++){
+        for(let j=0; j < receivers.length; j++){
+            if(transportTable[idx].wasPicked === false && transportTable[max_idx].profit <= transportTable[idx].profit &&
+            suppliers[i].actualSupply>0 && receivers[j].actualDemand>0){
+                max_idx=idx;
                 idx_i = i;
                 idx_j = j;
             }
+            idx+=1;
         }
     }
-    return [idx_i, idx_j];
+    return [idx_i, idx_j, max_idx];
 }
 
-const CalcTransportTable =
-    (suppliers: Array<Supplier>, receivers: Array<Receiver>, transportTable: Array<Array<TransportCell>>)=> {
-    while(true){
-        let [i, j] = findMaxGain(suppliers, receivers, transportTable);
+
+
+const calcTransportTable =
+    (suppliers: Array<Supplier>, receivers: Array<Receiver>, transportTable: Array<TransportCell>): Array<TransportCell> => {
+
+    let totalSupply = Object.values(suppliers).reduce((item, {supply})=> item + supply, 0)
+    let totalDemand = Object.values(receivers).reduce((item, {demand})=> item + demand, 0)
+    var counter: number = 0;
+    var pickedIndexes : Array<number> = new Array<number>();
+    var end_idx : Array<number> = new Array<number>();
+    for(let i = 0; i< suppliers.length;i++){
+        for(let j =0;j<receivers.length;j++){
+            if(i===suppliers.length-1) end_idx.push(i*receivers.length+j)
+            else if(j===receivers.length-1) end_idx.push((i*receivers.length+j))
+        }
+    }
+    end_idx.forEach((index)=> {transportTable[index].profit = - 123456})
+    console.log("END INDEXES HERE:", end_idx)
+
+    while(totalSupply > 0 && totalDemand > 0){
+        let [j, i, idx] = findMaxGain(suppliers, receivers, transportTable, pickedIndexes);
+        pickedIndexes.push(idx)
+        console.log(i, j, idx)
         if(receivers[i].actualDemand > suppliers[j].actualSupply){
-            transportTable[i][j].transport = suppliers[j].actualSupply;
+            console.log("act supply",suppliers[j].actualSupply)
+            transportTable[idx].transport = suppliers[j].actualSupply;
             receivers[i].actualDemand -= suppliers[j].actualSupply;
+            totalSupply -= suppliers[j].actualSupply
+            totalDemand -= suppliers[j].actualSupply
             suppliers[j].actualSupply = 0;
 
         }
         else{
-            transportTable[i][j].transport = receivers[i].actualDemand;
+            console.log("demand", receivers[i].actualDemand)
+            transportTable[idx].transport = receivers[i].actualDemand;
             suppliers[j].actualSupply -= receivers[i].actualDemand;
+            totalDemand -= receivers[i].actualDemand
+            totalSupply -= receivers[i].actualDemand
             receivers[i].actualDemand = 0;
         }
-        transportTable[i][j].wasPicked = true;
-        transportTable[i][j].isBase = true;
-
+        transportTable[idx].wasPicked = true;
+        if(transportTable[idx].transport > 0) transportTable[idx].isBase = true;
     }
-
+        end_idx.forEach((index) => {transportTable[index].profit=0})
+        return transportTable;
 }
 
 const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setReceivers:(t:Array<Receiver>) => void, 
@@ -81,8 +120,8 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
     let rowLength =rows.length
     let cellLength =rows[0].cells.length
     if (totalSupply !== totalDemand){
-        tempSuppliers.push({ id : rowLength, name: "Fictitious Supplier", supply: totalDemand, actualSupply:totalDemand, productCost:0 })
-        tempReceivers.push({ id : cellLength, name: "Fictitious Receiver", demand: totalSupply, actualDemand:totalSupply, sellingPrice:0 })
+        tempSuppliers.push({ id : rowLength, name: "Fictional Supplier", supply: totalDemand, actualSupply:totalDemand, productCost:0 })
+        tempReceivers.push({ id : cellLength, name: "Fictional Receiver", demand: totalSupply, actualDemand:totalSupply, sellingPrice:0 })
     }
     let index = 0;
     for (let i = 1; i < tempSuppliers[tempSuppliers.length -1].id+1; i++){
@@ -91,23 +130,25 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
             if (i < rows.length){
                 if(j < rows[0].cells.length){
                     let str:string = rows[i].cells[j].value.trim();
-                    let tempValue = parseInt(str);   
+                    let tempValue = tempReceivers[j-1].sellingPrice - parseInt(str) - tempSuppliers[i-1].productCost;
                     tempTransportTable.push({id: index, isBase: false, profit: tempValue, transport: 0, wasPicked: false, rowId: i, colId:j });  
                        
                 }
                 else{
-                    let tempValue = 0   
+                    let tempValue = 0
                     tempTransportTable.push({id: index, isBase: false, profit: tempValue, transport: 0, wasPicked: false, rowId: i, colId:j });
                 }
             }
             else{
-                let tempValue = 0   
+                let tempValue = 0
                 tempTransportTable.push({id: index, isBase: false, profit: tempValue, transport: 0, wasPicked: false, rowId: i, colId:j });
             }
             index +=1;
 
         }
     }
+    tempTransportTable = calcTransportTable(tempSuppliers, tempReceivers, tempTransportTable)
+    console.log("outside",tempTransportTable)
     setSuppliers(tempSuppliers)
     setReceivers(tempReceivers)
     setTransportTable(tempTransportTable)
@@ -122,7 +163,6 @@ const createFinalTable = (setFinalTableRows:(t:Array<CustomRowModel>) => void, s
     console.log("Receivers ", receivers)
     console.log("Suppliers ", suppliers)
     console.log("TransportTable ", transportTable)
-   
     var tempFinalTable = new Array<CustomRowModel>();
     var length_of_row = receivers.length
     {
@@ -145,7 +185,7 @@ const createFinalTable = (setFinalTableRows:(t:Array<CustomRowModel>) => void, s
 
             let index:number =(i) * length_of_row + j
             console.log(index.toString() ," ,i = ", i , ' , j = ', j)
-            tempCellArray.push({ colNum:j, value:transportTable[index].transport.toString(), transport: transportTable[index].profit.toString()})
+            tempCellArray.push({ colNum:j, value:transportTable[index].profit.toString(), transport: transportTable[index].transport.toString()})
             
         }
         tempFinalTable.push({ rowNum:i+1, cells:JSON.parse(JSON.stringify(tempCellArray))})
