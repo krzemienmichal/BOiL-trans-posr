@@ -51,7 +51,7 @@ const calcTransportTable =
 
     let totalSupply = Object.values(suppliers).reduce((item, {supply})=> item + supply, 0)
     let totalDemand = Object.values(receivers).reduce((item, {demand})=> item + demand, 0)
-    var counter: number = 0;
+
     var pickedIndexes : Array<number> = new Array<number>();
     var end_idx : Array<number> = new Array<number>();
     for(let i = 0; i< suppliers.length;i++){
@@ -61,14 +61,11 @@ const calcTransportTable =
         }
     }
     end_idx.forEach((index)=> {transportTable[index].profit = - 123456})
-    console.log("END INDEXES HERE:", end_idx)
 
     while(totalSupply > 0 && totalDemand > 0){
         let [j, i, idx] = findMaxGain(suppliers, receivers, transportTable, pickedIndexes);
         pickedIndexes.push(idx)
-        console.log(i, j, idx)
         if(receivers[i].actualDemand > suppliers[j].actualSupply){
-            console.log("act supply",suppliers[j].actualSupply)
             transportTable[idx].transport = suppliers[j].actualSupply;
             receivers[i].actualDemand -= suppliers[j].actualSupply;
             totalSupply -= suppliers[j].actualSupply
@@ -77,7 +74,6 @@ const calcTransportTable =
 
         }
         else{
-            console.log("demand", receivers[i].actualDemand)
             transportTable[idx].transport = receivers[i].actualDemand;
             suppliers[j].actualSupply -= receivers[i].actualDemand;
             totalDemand -= receivers[i].actualDemand
@@ -99,6 +95,8 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
     let tempReceivers : Array<Receiver> = Array<Receiver>();
     let tempSuppliers : Array<Supplier> = Array<Supplier>();
     let tempTransportTable : Array<TransportCell> = Array<TransportCell>();
+    let transportCost : Array<number> = Array<number>();
+
     var totalDemand =0;
     var totalSupply =0;
     for (let i = 1; i <rows[0].cells.length; i++){ // id zaczynaja sie od 1 
@@ -131,16 +129,19 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
                 if(j < rows[0].cells.length){
                     let str:string = rows[i].cells[j].value.trim();
                     let tempValue = tempReceivers[j-1].sellingPrice - parseInt(str) - tempSuppliers[i-1].productCost;
+                    transportCost.push(parseInt(str))
                     tempTransportTable.push({id: index, isBase: false, profit: tempValue, transport: 0, wasPicked: false, rowId: i, colId:j });  
                        
                 }
                 else{
                     let tempValue = 0
+                    transportCost.push(0)
                     tempTransportTable.push({id: index, isBase: false, profit: tempValue, transport: 0, wasPicked: false, rowId: i, colId:j });
                 }
             }
             else{
                 let tempValue = 0
+                transportCost.push(0)
                 tempTransportTable.push({id: index, isBase: false, profit: tempValue, transport: 0, wasPicked: false, rowId: i, colId:j });
             }
             index +=1;
@@ -148,7 +149,21 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
         }
     }
     tempTransportTable = calcTransportTable(tempSuppliers, tempReceivers, tempTransportTable)
-    console.log("outside",tempTransportTable)
+
+    var [alfa, beta] = cycleCalculation(tempSuppliers, tempReceivers, tempTransportTable)
+    // var totalCost = Object.values(tempSuppliers).reduce((item, {productCost})=> item + productCost, 0)
+    // var totalGain = Object.values(tempTransportTable).reduce((item, {profit}) => item + profit, 0 )
+    // var intermediaryGain = totalGain - totalCost
+    console.log("TRANSPORTCOST: ", transportCost)
+    var [totalCost, totalGain, profit] = calculateIncome(tempSuppliers, tempReceivers, tempTransportTable, transportCost)
+
+    console.log("ALFA: ", alfa)
+    console.log("BETA: ", beta)
+    console.log("Tot Cost: ", totalCost)
+    console.log("Tot Gain: ", totalGain)
+    console.log("Int Gain: ", profit)
+
+
     setSuppliers(tempSuppliers)
     setReceivers(tempReceivers)
     setTransportTable(tempTransportTable)
@@ -160,9 +175,9 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
 const createFinalTable = (setFinalTableRows:(t:Array<CustomRowModel>) => void, suppliers: Array<Supplier>,
             receivers: Array<Receiver>, transportTable: Array<TransportCell>,) => {
 
-    console.log("Receivers ", receivers)
-    console.log("Suppliers ", suppliers)
-    console.log("TransportTable ", transportTable)
+    // console.log("Receivers ", receivers)
+    // console.log("Suppliers ", suppliers)
+    // console.log("TransportTable ", transportTable)
     var tempFinalTable = new Array<CustomRowModel>();
     var length_of_row = receivers.length
     {
@@ -184,14 +199,14 @@ const createFinalTable = (setFinalTableRows:(t:Array<CustomRowModel>) => void, s
            
 
             let index:number =(i) * length_of_row + j
-            console.log(index.toString() ," ,i = ", i , ' , j = ', j)
+            // console.log(index.toString() ," ,i = ", i , ' , j = ', j)
             tempCellArray.push({ colNum:j, value:transportTable[index].profit.toString(), transport: transportTable[index].transport.toString()})
             
         }
         tempFinalTable.push({ rowNum:i+1, cells:JSON.parse(JSON.stringify(tempCellArray))})
     }
 
-    console.log("final table:  ", tempFinalTable)
+    // console.log("final table:  ", tempFinalTable)
     setFinalTableRows(tempFinalTable)
     return
 
@@ -257,6 +272,129 @@ const checkIfFilledCorrectly = (rows: Array<CustomRowModel>) :string =>{
         return ""
     }
     return error;
-
 }
+
+const cycleCalculation = (suppliers: Array<Supplier>, receivers: Array<Receiver>, transportTable: Array<TransportCell>) =>{
+
+
+
+    while(true) {
+        var alfa : Array<number|null> = new Array<number>(suppliers.length);
+        var beta : Array<number|null> = new Array<number>(receivers.length);
+        for(let i = 0; i < alfa.length; i++) alfa[i] = null
+        for(let i = 0; i < beta.length; i++) beta[i] = null
+        alfa[0] = 0
+        let isNotSolved = true
+        let idx = 0
+        while (isNotSolved) {
+            isNotSolved = false;
+            for (let i = 0; i < alfa.length; i++) {
+                for (let j = 0; j < beta.length; j++) {
+                    idx = i * beta.length + j
+                    if (alfa[i] === null || beta[j] === null) {
+                        isNotSolved = true;
+                    }
+                    if (transportTable[idx].transport !== 0 && alfa[i] !== null && beta[j] === null) {
+                        beta[j] = transportTable[idx].profit - alfa[i]!;
+                    }
+                    if (transportTable[idx].transport !== 0 && alfa[i] === null && beta[j] !== null) {
+                        alfa[i] = transportTable[idx].profit - beta[j]!;
+                    }
+                }
+            }
+
+        }
+
+        const criticalVariable: (null | number)[][] = suppliers.map(() =>
+            receivers.map(() => 0)
+        );
+        let index_i: number = -1,
+            index_j: number = -1;
+        let maxValue = 0;
+
+        idx = 0
+
+        for (let i = 0; i < criticalVariable.length; i++) {
+            for (let j = 0; j < criticalVariable[0].length; j++) {
+                idx = i * criticalVariable[0].length + j
+                if (transportTable[idx].transport !== 0) {
+                    criticalVariable[i][j] = null;
+                } else {
+                    criticalVariable[i][j] = transportTable[idx].profit - alfa[i]! - beta[j]!;
+                    if (criticalVariable[i][j]! > maxValue) {
+                        maxValue = criticalVariable[i][j]!;
+                        index_i = i;
+                        index_j = j;
+                    }
+                }
+            }
+        }
+
+        if (maxValue > 0) {
+            let temp_i: number = 0,
+                temp_j: number = 0;
+            for (let i = 0; i < criticalVariable.length; i++) {
+                for (let j = 0; j < criticalVariable[0].length; j++) {
+                    if (
+                        criticalVariable[i][j] === null &&
+                        criticalVariable[index_i][j] === null &&
+                        criticalVariable[i][index_j] === null
+                    ) {
+                        temp_i = i;
+                        temp_j = j;
+                    }
+                }
+            }
+            if (transportTable[temp_i * criticalVariable[0].length + index_j].transport < transportTable[index_i * criticalVariable[0].length + temp_j].transport) {
+                transportTable[index_i * criticalVariable[0].length + temp_j].transport -= transportTable[temp_i * criticalVariable[0].length + index_j].transport;
+                transportTable[temp_i * criticalVariable[0].length + temp_j].transport += transportTable[temp_i * criticalVariable[0].length + index_j].transport;
+                transportTable[index_i * criticalVariable[0].length + index_j].transport += transportTable[temp_i * criticalVariable[0].length + index_j].transport;
+                transportTable[temp_i * criticalVariable[0].length + index_j].transport = 0;
+            } else {
+                transportTable[temp_i * criticalVariable[0].length + index_j].transport -= transportTable[index_i * criticalVariable[0].length + temp_j].transport;
+                transportTable[temp_i * criticalVariable[0].length + temp_j].transport += transportTable[index_i * criticalVariable[0].length + temp_j].transport;
+                transportTable[index_i * criticalVariable[0].length + index_j].transport += transportTable[index_i * criticalVariable[0].length + temp_j].transport;
+                transportTable[index_i * criticalVariable[0].length + temp_j].transport = 0;
+            }
+        } else {
+            break;
+        }
+    }
+    return [alfa, beta]
+}
+
+const calculateIncome = (suppliers: Array<Supplier>, receivers: Array<Receiver>, transportTable: Array<TransportCell>,
+                         transportCost: Array<number>) =>{
+    var totalCost : number = 0,
+        totalGain : number = 0,
+        profit : number = 0;
+
+    var end_idx : Array<number> = new Array<number>();
+    for(let i = 0; i< suppliers.length;i++){
+        for(let j =0;j<receivers.length;j++){
+            if(i===suppliers.length-1) end_idx.push(i*receivers.length+j)
+            else if(j===receivers.length-1) end_idx.push((i*receivers.length+j))
+        }
+    }
+
+    let idx = 0
+
+    for(let i = 0; i < suppliers.length; i++){
+        for(let j = 0; j < receivers.length; j++){
+            idx = i*receivers.length+j
+            if(!end_idx.includes(idx)){
+                totalCost += transportTable[idx].transport * (suppliers[i].productCost + transportCost[idx])
+                totalGain += transportTable[idx].transport * receivers[j].sellingPrice
+            }
+        }
+    }
+    profit = totalGain - totalCost
+    return [totalCost, totalGain, profit]
+}
+
+// const calcCriticalVariables = (suppliers : Array<Supplier>, receivers : Array<Receiver>, transportTable : Array<TransportCell>,
+//                             alfa : Array<number|null>, beta : Array<number|null>) : boolean =>{
+//
+//
+// }
 export {setTransportTableFunc, createFinalTable, checkIfAllFilled, checkIfFilledCorrectly}
