@@ -31,4 +31,9 @@
  .finalTable{
    display: flex;
  }
- 
+ .deltasResults{
+  display: flex;
+ }
+ .endResults{
+  display: flex;
+ }

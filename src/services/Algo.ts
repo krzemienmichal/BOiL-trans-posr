@@ -86,10 +86,77 @@ const calcTransportTable =
         end_idx.forEach((index) => {transportTable[index].profit=0})
         return transportTable;
 }
+ const to_num = (nm: number|null): number => {
+    if(nm==null){
+        return 0 ;
+    }    
+    return nm
+} 
+const to_str = (nm: number|null): string => {
+    if(nm==null){
+        return "X";
+    }    
+    return nm.toString()
+} 
+const addAlfasBetasToResultTable = (suppliers: Array<Supplier>, receivers: Array<Receiver>, transportTable: Array<TransportCell>, 
+    alfa: Array<number|null>, beta: Array<number|null>) : Array<TransportCell> => {
+        let id_sup = suppliers.length;
+        let id_rec = receivers.length;
+        receivers.push({id: id_rec, name: "alfa", demand: 0, actualDemand: 0, sellingPrice: 0 });
+        suppliers.push({id: id_sup, name: "beta", supply: 0, actualSupply: 0, productCost: 0 });
+        var tempTransportTable: Array<TransportCell> = new Array<TransportCell>();
+        var alfa_counter  = 0;
+        var beta_counter  = 0;
+        var transport_counter = 0;
+        for (let i = 0; i <suppliers.length; i++){
+            for(let j = 0 ; j < receivers.length; j++){
+                if(i ==suppliers.length -1 && j == receivers.length -1)
+                {
+                    break;
+                }
+                else if(j==receivers.length -1){
+                    tempTransportTable.push({id: -1, isBase: false, profit:0, transport: to_num(alfa[alfa_counter]), 
+                    wasPicked: false, rowId: i, colId: j});
+                    alfa_counter+=1;
 
+                }else if (i === suppliers.length -1){
+                    tempTransportTable.push({id: -1, isBase: false, profit:0, transport: to_num(beta[beta_counter]), 
+                    wasPicked: false, rowId: i, colId: j});
+                    beta_counter+=1;
+    
+                }
+                else{ 
+                    tempTransportTable.push(transportTable[transport_counter]);
+                    transport_counter+=1;
+                }
+            }
+        }
+        console.log("alfy i bety do tranportowej", tempTransportTable)
+    return tempTransportTable;
+}
+
+const setResults = (setResultsTableRows:(t:Array<CustomRowModel> ) => void, gain:number, cost:number, profit:number)=>{
+
+    var tempResultsTable = new Array<CustomRowModel>();
+    
+   
+    let  tempCellArray = new Array<CustomCellModel>();
+    tempCellArray.push( {colNum:0, value:" ", transport : "Profit"})
+    tempCellArray.push( {colNum:1, value:" ", transport : "Total gain"})
+    tempCellArray.push( {colNum:2, value:" ", transport : "Total cost"})
+    let  tempCellArray2 = new Array<CustomCellModel>();
+    tempCellArray2.push( {colNum:0, value:" ", transport : profit.toString()})
+    tempCellArray2.push( {colNum:1, value:" ", transport : gain.toString()})
+    tempCellArray2.push( {colNum:2, value:" ", transport : cost.toString()})
+        
+    tempResultsTable.push({ rowNum:0, cells:JSON.parse(JSON.stringify(tempCellArray))})
+    tempResultsTable.push({ rowNum:0, cells:JSON.parse(JSON.stringify(tempCellArray2))})
+    setResultsTableRows(tempResultsTable)
+}
 const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setReceivers:(t:Array<Receiver>) => void, 
     setTransportTable:(t:Array<TransportCell>) => void, rows: Array<CustomRowModel>,
-    setShouldStartCalculation:(t:number) => void, shouldStartCalculation: number)=> {
+    setShouldStartCalculation:(t:number) => void, shouldStartCalculation: number,
+     setDeltasTableRows:(t:Array<CustomRowModel> ) => void,setResultsTableRows:(t:Array<CustomRowModel> ) => void )=> {
     // receiver wiersz ,odbiorca kolumna 
 
     let tempReceivers : Array<Receiver> = Array<Receiver>();
@@ -150,7 +217,7 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
     }
     tempTransportTable = calcTransportTable(tempSuppliers, tempReceivers, tempTransportTable)
 
-    var [alfa, beta] = cycleCalculation(tempSuppliers, tempReceivers, tempTransportTable)
+    var [alfa, beta] = cycleCalculation(tempSuppliers, tempReceivers, tempTransportTable, setDeltasTableRows)
     // var totalCost = Object.values(tempSuppliers).reduce((item, {productCost})=> item + productCost, 0)
     // var totalGain = Object.values(tempTransportTable).reduce((item, {profit}) => item + profit, 0 )
     // var intermediaryGain = totalGain - totalCost
@@ -162,8 +229,9 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
     console.log("Tot Cost: ", totalCost)
     console.log("Tot Gain: ", totalGain)
     console.log("Int Gain: ", profit)
-
-
+    setResults(setResultsTableRows, totalGain, totalCost, profit)
+    tempTransportTable = addAlfasBetasToResultTable  (tempSuppliers, tempReceivers, tempTransportTable, alfa, beta) 
+    console.log(" po w yjsciu z obliczen ", tempTransportTable)
     setSuppliers(tempSuppliers)
     setReceivers(tempReceivers)
     setTransportTable(tempTransportTable)
@@ -172,35 +240,54 @@ const setTransportTableFunc = (setSuppliers:(t:Array<Supplier>) => void,setRecei
     return
 
 }
+
 const createFinalTable = (setFinalTableRows:(t:Array<CustomRowModel>) => void, suppliers: Array<Supplier>,
-            receivers: Array<Receiver>, transportTable: Array<TransportCell>,) => {
+            receivers: Array<Receiver>, transportTable: Array<TransportCell>) => {
 
     // console.log("Receivers ", receivers)
     // console.log("Suppliers ", suppliers)
     // console.log("TransportTable ", transportTable)
+
     var tempFinalTable = new Array<CustomRowModel>();
     var length_of_row = receivers.length
     {
         let  tempCellArray = new Array<CustomCellModel>();
         tempCellArray.push({ colNum:0, value:"", transport:""})
         for(let j = 0; j <receivers.length; j++){
-            tempCellArray.push({ colNum:j, value:receivers[j].name + ", " +receivers[j].demand.toString(), transport:""})
+            if (j == receivers.length-1){
+                tempCellArray.push({ colNum:j, value:receivers[j].name, transport:""})
+            }else{
+                tempCellArray.push({ colNum:j, value:receivers[j].name + ", " +receivers[j].demand.toString(), transport:""})
+            }
+           
         }
         tempFinalTable.push({ rowNum:0, cells:JSON.parse(JSON.stringify(tempCellArray))})
     }
     for (let i = 0; i <suppliers.length ; i++){
         let  tempCellArray = new Array<CustomCellModel>();
         for(let j = 0; j <receivers.length; j++){
-
-            if (j ===0){
+            let index:number =(i) * length_of_row + j
+            if(j==0 && i == suppliers.length -1){
+                tempCellArray.push({ colNum:j, value:suppliers[i].name, transport:""})
+            }
+            else if (j ===0){
                
                 tempCellArray.push({ colNum:j, value:suppliers[i].name + ", " +suppliers[i].supply.toString(), transport:""})
             }
-           
-
-            let index:number =(i) * length_of_row + j
+            if(j == receivers.length -1 && i==suppliers.length-1){
+                tempCellArray.push({ colNum:j, value:"", transport:""})
+            }else if( i == suppliers.length -1){
+                tempCellArray.push({ colNum:j, value:" ", transport: transportTable[index].transport.toString()})
+            }
+            else if( j==receivers.length -1 ){
+                tempCellArray.push({ colNum:j, value:" ", transport: transportTable[index].transport.toString()})
+            }
+            else{
+                tempCellArray.push({ colNum:j, value:transportTable[index].profit.toString(),
+                     transport: transportTable[index].transport.toString()})
+            }
             // console.log(index.toString() ," ,i = ", i , ' , j = ', j)
-            tempCellArray.push({ colNum:j, value:transportTable[index].profit.toString(), transport: transportTable[index].transport.toString()})
+           
             
         }
         tempFinalTable.push({ rowNum:i+1, cells:JSON.parse(JSON.stringify(tempCellArray))})
@@ -273,8 +360,21 @@ const checkIfFilledCorrectly = (rows: Array<CustomRowModel>) :string =>{
     }
     return error;
 }
+const setDeltas = (setDeltasTableRows:(t:Array<CustomRowModel> ) => void, criticalVariable: (null | number)[][])=>{
 
-const cycleCalculation = (suppliers: Array<Supplier>, receivers: Array<Receiver>, transportTable: Array<TransportCell>) =>{
+    var tempDeltaslTable = new Array<CustomRowModel>();
+    
+    for(let i = 0; i < criticalVariable.length;i++) {
+        let  tempCellArray = new Array<CustomCellModel>();
+        for (let j = 0; j < criticalVariable[i].length;j++){
+            tempCellArray.push({ colNum:j, value:" ", transport : to_str(criticalVariable[i][j])})
+        }
+        tempDeltaslTable.push({ rowNum:i, cells:JSON.parse(JSON.stringify(tempCellArray))})
+    }  
+    setDeltasTableRows(tempDeltaslTable)
+}
+const cycleCalculation = (suppliers: Array<Supplier>, receivers: Array<Receiver>, transportTable: Array<TransportCell>, 
+    setDeltasTableRows:(t:Array<CustomRowModel> ) => void) =>{
 
 
 
@@ -305,7 +405,7 @@ const cycleCalculation = (suppliers: Array<Supplier>, receivers: Array<Receiver>
 
         }
 
-        const criticalVariable: (null | number)[][] = suppliers.map(() =>
+        var criticalVariable: (null | number)[][] = suppliers.map(() =>
             receivers.map(() => 0)
         );
         let index_i: number = -1,
@@ -360,6 +460,7 @@ const cycleCalculation = (suppliers: Array<Supplier>, receivers: Array<Receiver>
             break;
         }
     }
+    setDeltas(setDeltasTableRows, criticalVariable);
     return [alfa, beta]
 }
 

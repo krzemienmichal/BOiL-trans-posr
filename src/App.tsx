@@ -17,6 +17,8 @@ import {CustomNavbar} from './components/Navbar'
 function App() {
   const [tableRows, setTableRows] = useState<Array<CustomRowModel>>([])
   const [finalTableRows, setFinalTableRows] = useState<Array<CustomRowModel>>([])
+  const [deltasTableRows, setDeltasTableRows] = useState<Array<CustomRowModel>>([])
+  const [resultsTableRows, setResultsTableRows] = useState<Array<CustomRowModel>>([])
   const [shouldCalculate, setShouldCalculate] = useState<number>(1)
   const [receivers, setReceivers] = useState<Array<Receiver>>([])
   const [suppliers, setSuppliers] = useState<Array<Supplier>>([])
@@ -50,7 +52,7 @@ function App() {
       var err: string= checkIfFilledCorrectly(tableRows)
       if(err==="")
       {
-        setTransportTableFunc(setSuppliers, setReceivers, setTransportTable, tableRows, setShouldStartCalculation, shouldStartCalculation)
+        setTransportTableFunc(setSuppliers, setReceivers, setTransportTable, tableRows, setShouldStartCalculation, shouldStartCalculation, setDeltasTableRows, setResultsTableRows)
         setError("")
       }else{
         setError(err)
@@ -89,7 +91,15 @@ function App() {
       <div className="finalResults">
         <div className="finalTable">
           <FinalTable rows = {finalTableRows} />
+          
           </div>
+          
+      </div>
+      <div className="deltasResults">
+          <FinalTable rows = {deltasTableRows} />
+      </div>
+      <div className="endResults">
+          <FinalTable rows = {resultsTableRows} />
       </div>
       
     </div>
