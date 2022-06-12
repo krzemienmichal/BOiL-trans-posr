@@ -87,17 +87,33 @@ function App() {
            error = {error}/>
         </div>
 
-        
+            
       </div> 
+      <div className="strings">
+      <h2>
+        Final table:
+      </h2>
+      </div>
       <div className="finalResults">
+        
         <div className="finalTable">
           <FinalTable rows = {finalTableRows} />
           
           </div>
           
       </div>
+      <div className="strings">
+      <h2>
+        Delta's table:
+      </h2>
+      </div>
       <div className="deltasResults">
           <ResultTable rows = {deltasTableRows} />
+      </div>
+      <div className="strings">
+      <h2>
+        Final results:
+      </h2>
       </div>
       <div className="endResults">
           <ResultTable rows = {resultsTableRows} />
