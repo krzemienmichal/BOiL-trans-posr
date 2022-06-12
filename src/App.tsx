@@ -21,6 +21,7 @@ function App() {
   const [deltasTableRows, setDeltasTableRows] = useState<Array<CustomRowModel>>([])
   const [resultsTableRows, setResultsTableRows] = useState<Array<CustomRowModel>>([])
   const [shouldCalculate, setShouldCalculate] = useState<number>(1)
+  const [showTableSignatures, setShowTableSignatures] = useState<boolean>(false)
   const [receivers, setReceivers] = useState<Array<Receiver>>([])
   const [suppliers, setSuppliers] = useState<Array<Supplier>>([])
   const [transportTable, setTransportTable] = useState<Array<TransportCell>>([])
@@ -64,7 +65,7 @@ function App() {
 
   useEffect(() =>{
     if(suppliers.length >0){
-
+      setShowTableSignatures(true)
       setShouldCreateFinalTable(shouldCreateFinalTable*-1)
      
     }
@@ -91,7 +92,7 @@ function App() {
       </div> 
       <div className="strings">
       <h2>
-        Final table:
+        { showTableSignatures===true && "Final table:"}
       </h2>
       </div>
       <div className="finalResults">
@@ -104,7 +105,7 @@ function App() {
       </div>
       <div className="strings">
       <h2>
-        Delta's table:
+      {showTableSignatures===true &&  "Delta's table:"}
       </h2>
       </div>
       <div className="deltasResults">
@@ -112,7 +113,7 @@ function App() {
       </div>
       <div className="strings">
       <h2>
-        Final results:
+        {showTableSignatures===true && "Final results:"}
       </h2>
       </div>
       <div className="endResults">
