@@ -12,6 +12,7 @@ import Supplier from './modules/Supplier'
 import TransportCell from './modules/TransportCell'
 import {setTransportTableFunc, createFinalTable, checkIfAllFilled, checkIfFilledCorrectly} from './services/Algo'
 import {FinalTable} from './components/FinalTable'
+import {ResultTable} from './components/ResultTable'
 import {CustomNavbar} from './components/Navbar'
 
 function App() {
@@ -96,10 +97,10 @@ function App() {
           
       </div>
       <div className="deltasResults">
-          <FinalTable rows = {deltasTableRows} />
+          <ResultTable rows = {deltasTableRows} />
       </div>
       <div className="endResults">
-          <FinalTable rows = {resultsTableRows} />
+          <ResultTable rows = {resultsTableRows} />
       </div>
       
     </div>
